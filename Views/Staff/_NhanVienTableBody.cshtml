@@ -1,0 +1,30 @@
+@model List<MVCData.Models.NhanVien>
+
+@if (!Model.Any())
+{
+    <tr>
+        <td colspan="9" class="text-center text-danger">
+            Không tìm thấy dữ liệu
+        </td>
+    </tr>
+}
+else
+{
+    @foreach (var nv in Model)
+    {
+        <tr>
+            <td>@nv.ID</td>
+            <td>@nv.HoTen</td>
+            <td>@nv.NgaySinh.ToString("dd/MM/yyyy")</td>
+            <td>@nv.SoDienThoai</td>
+            <td>@nv.DiaChi</td>
+            <td>@nv.ChucVu</td>
+            <td>@nv.SoNamCongTac</td>
+            <td>@nv.TenPhongBan</td>
+            <td>
+                <button class="btn btn-warning btn-sm" onclick="openEditModal('@nv.ID')">Sửa</button>
+                <button class="btn btn-danger btn-sm" onclick="confirmDelete('@nv.ID')">Xóa</button>
+            </td>
+        </tr>
+    }
+}

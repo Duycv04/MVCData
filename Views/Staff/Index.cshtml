@@ -1,0 +1,234 @@
+@model List<MVCData.Models.NhanVien>
+
+<h2 class="text-center text-danger mb-4">Quản lý nhân viên</h2>
+<div class="row g-2 mb-3">
+    <div class="col-md-6">
+        <input type="text" id="txtSearch" class="form-control" placeholder="Nhập ID, Họ tên hoặc Địa chỉ" />
+    </div>
+    <div class="col-md-2">
+        <button type="button" id="ThemMoi" class="btn btn-success w-100" onclick="openCreateModal()">
+            Thêm mới
+        </button>
+    </div>
+    <div class="col-md-2">
+        <a href="/Staff/Index" class="btn btn-secondary w-100">
+            Reset
+        </a>
+    </div>
+    <div class="col-md-2">
+        <a href="/Staff/ExportExcel" class="btn btn-success w-100">
+            Xuất Excel
+        </a>
+    </div>
+</div>
+<form method="get" asp-controller="Staff" asp-action="Index" class="mb-3">
+    <select name="phongBanId" class="form-select" asp-items="ViewBag.PhongBanSelectList" onchange="this.form.submit()">
+        <option value="0">-- Tất cả phòng ban --</option>
+    </select>
+</form>
+<table class="table table-bordered table-hover text-center align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Họ tên</th>
+            <th>Ngày sinh</th>
+            <th>SĐT</th>
+            <th>Địa chỉ</th>
+            <th>Chức vụ</th>
+            <th>Số năm CT</th>
+            <th>Phòng Ban</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody">
+        @foreach (var nv in Model)
+        {
+            <tr>
+                <td>@nv.ID</td>
+                <td>@nv.HoTen</td>
+                <td>@nv.NgaySinh.ToString("dd/MM/yyyy")</td>
+                <td>@nv.SoDienThoai</td>
+                <td>@nv.DiaChi</td>
+                <td>@nv.ChucVu</td>
+                <td>@nv.SoNamCongTac</td>
+                <td>@nv.TenPhongBan</td>
+                <td>
+                    <button class="btn btn-warning btn-sm" onclick="openEditModal('@nv.ID')">Sửa</button>
+                    <button class="btn btn-danger btn-sm" onclick="confirmDelete('@nv.ID')">Xóa</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<ul class="pagination justify-content-center">
+    @for (int i = 1; i <= ViewBag.TotalPage; i++)
+    {
+        <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+            <a class="page-link" href="javascript:void(0)" onclick="loadPage(@i)">
+                @i
+            </a>
+        </li>
+    }
+</ul>
+<div class="modal fade" id="staffModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="staffModalTitle">Nhân viên</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="modalLoading" class="text-center my-4 d-none">
+                    <div class="spinner-border text-primary"></div>
+                    <p class="mt-2">Đang xử lý</p>
+                </div>
+                <div id="modalContent"></div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="editModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Sửa nhân viên</h5>
+                <button class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="editLoading" class="text-center">
+                    <div class="spinner-border text-primary"></div>
+                    <p>Đang tải dữ liệu...</p>
+                </div>
+                <div id="editFormContainer"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $("#ThemMoi").click(function (e) {
+                e.preventDefault();
+
+                $("#staffModalTitle").text("Thêm nhân viên");
+                $("#modalLoading").removeClass("d-none");
+                $("#modalContent").html("");
+                $("#staffModal").modal("show");
+                $("#modalContent").load("/Staff/CreatePopup", function () {
+                    $("#modalLoading").addClass("d-none");
+                });
+            });
+            $(document).on("submit", "#createStaffForm", function (e) {
+                e.preventDefault();
+
+                $("#modalLoading").removeClass("d-none");
+
+                $.ajax({
+                    url: "/Staff/CreatePopup",
+                    type: "POST",
+                    data: $(this).serialize(),
+                    success: function (res) {
+                        $("#modalLoading").addClass("d-none");
+
+                        if (res.success) {
+                            alert("Thêm nhân viên thành công");
+                            $("#staffModal").modal("hide");
+                            location.reload();
+                        } else {
+                            alert(res.message);
+                        }
+                    },
+                    error: function () {
+                        $("#modalLoading").addClass("d-none");
+                        alert("Có lỗi xảy ra khi thêm mới");
+                    }
+                });
+            });
+
+            window.openEditModal = function (id) {
+                $("#editModal").modal("show");
+                $("#editLoading").removeClass("d-none");
+                $("#editFormContainer").html("");
+                $("#editFormContainer").load("/Staff/EditPopup?id=" + id,
+                    function (response, status) {
+                        $("#editLoading").addClass("d-none");
+                        if (status !== "success") {
+                            $("#editFormContainer").html(
+                                "<div class='text-danger'>Không tải được form sửa</div>"
+                            );
+                        }
+                    }
+                );
+            };
+            $(document).on("submit", "#editProductForm", function (e) {
+                e.preventDefault();
+                $.ajax({
+                    url: "/Staff/Update",
+                    type: "POST",
+                    data: $(this).serialize(),
+                    success: function (res) {
+                        if (res.success) {
+                            alert("Cập nhật thành công");
+                            $("#editModal").modal("hide");
+                            location.reload();
+                        } else {
+                            alert(res.message || "Cập nhật thất bại");
+                        }
+                    },
+                    error: function () {
+                        alert("Lỗi server khi cập nhật");
+                    }
+                });
+            });
+            window.confirmDelete = function (id) {
+                if (!confirm("Bạn có chắc chắn muốn xóa nhân viên này không?")) return;
+                $.ajax({
+                    url: "/Staff/Delete",
+                    type: "POST",
+                    data: { id: id },
+                    success: function (res) {
+                        if (res.success) {
+                            alert("Xóa thành công");
+                            location.reload();
+                        } else {
+                            alert(res.message);
+                        }
+                    },
+                    error: function () {
+                        alert("Không thể xóa nhân viên");
+                    }
+                });
+            };
+        });
+        $(function () {
+            let timer = null;
+            $("#txtSearch").on("keyup", function () {
+                clearTimeout(timer);
+                let keyword = $(this).val();
+                timer = setTimeout(function () {
+                    $.get("/Staff/Search", { keyword: keyword }, function (res) {
+                        $("#tableBody").html(res);
+                    });
+                }, 50);
+            });
+        });
+        function loadPage(page) {
+            $.ajax({
+                url: "/Staff/Index",
+                type: "GET",
+                data: { page: page },
+                success: function (html) {
+                    var newBody = $(html).find("#tableBody").html();
+                    $("#tableBody").html(newBody);
+                    var newPaging = $(html).find(".pagination").html();
+                    $(".pagination").html(newPaging);
+                },
+                error: function () {
+                    alert("Không tải được dữ liệu");
+                }
+            });
+        }
+    </script>
+}

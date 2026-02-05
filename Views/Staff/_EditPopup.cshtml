@@ -1,0 +1,162 @@
+@model MVCData.Models.NhanVien
+
+<form id="editStaffForm">
+    <input type="hidden" asp-for="ID" />
+    <div class="mb-3">
+        <label class="form-label">Họ tên</label>
+        <input asp-for="HoTen" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Ngày sinh</label>
+        <input asp-for="NgaySinh" type="date" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">SĐT</label>
+        <input asp-for="SoDienThoai" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Địa chỉ</label>
+        <input asp-for="DiaChi" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Chức vụ</label>
+        <select asp-for="ChucVu" class="form-select">
+            <option>Giám đốc</option>
+            <option>Phó giám đốc</option>
+            <option>Trưởng phòng</option>
+            <option>Nhân viên</option>
+            <option>Thực tập sinh</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Số năm công tác</label>
+        <input asp-for="SoNamCongTac" type="number" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Phòng ban</label>
+        <select asp-for="PhongBanId" class="form-select">
+            <option value="">-- Chọn phòng ban --</option>
+
+            @if (ViewBag.PhongBans != null)
+            {
+                foreach (var pb in ViewBag.PhongBans)
+                {
+                    <option value="@pb.ID">@pb.TenPhongBan</option>
+                }
+            }
+        </select>
+    </div>
+    <div class="text-end">
+        <button type="submit" class="btn btn-success">
+            Lưu thay đổi
+        </button>
+    </div>
+</form>
+<script>
+    $(function () {
+
+        function checkHoTen() {
+            let hoTen = $("#HoTen").val().trim();
+            if (hoTen.length < 3) {
+                alert("Họ tên phải có ít nhất 3 ký tự");
+                return false;
+            }
+            return true;
+        }
+
+        function checkNgaySinh() {
+            let ngaySinh = $("#NgaySinh").val();
+            let today = new Date().toISOString().split("T")[0];
+
+            if (!ngaySinh) {
+                alert("Vui lòng nhập ngày sinh");
+                return false;
+            }
+            if (ngaySinh >= today) {
+                alert("Ngày sinh phải nhỏ hơn ngày hiện tại");
+                return false;
+            }
+            return true;
+        }
+
+        function checkSoDienThoai(callback) {
+            let sdt = $("#SoDienThoai").val().trim();
+            let id = $("#ID").val();
+            let regex = /^(03|05|07|08)\d{8}$/;
+
+            if (!regex.test(sdt)) {
+                alert("SĐT phải đủ 10 số, bắt đầu bằng 03, 05, 07 hoặc 08");
+                callback(false);
+                return;
+            }
+
+            $.get("/Staff/CheckSDT",
+                { soDienThoai: sdt, id: id },
+                function (res) {
+                    if (res === true) {
+                        alert("Số điện thoại đã tồn tại");
+                        callback(false);
+                    } else {
+                        callback(true);
+                    }
+                }
+            ).fail(function () {
+                alert("Không kiểm tra được số điện thoại");
+                callback(false);
+            });
+        }
+
+        function checkSoNamCongTac() {
+            let val = $("#SoNamCongTac").val();
+            if (val === "" || isNaN(val) || parseInt(val) < 0) {
+                alert("Số năm công tác phải >= 0");
+                return false;
+            }
+            return true;
+        }
+
+        function checkPhongBan() {
+            if (!$("#PhongBanId").val()) {
+                alert("Vui lòng chọn phòng ban");
+                return false;
+            }
+            return true;
+        }
+
+        $("#editStaffForm").on("submit", function (e) {
+            e.preventDefault();
+
+            if (
+                !checkHoTen() ||
+                !checkNgaySinh() ||
+                !checkSoNamCongTac() ||
+                !checkPhongBan()
+            ) return;
+
+            if (!confirm("Bạn có chắc chắn muốn thay đổi thông tin nhân viên này không?"))
+                return;
+
+            checkSoDienThoai(function (isSdtOk) {
+                if (!isSdtOk) return;
+
+                $.ajax({
+                    url: "/Staff/EditPopup",
+                    type: "POST",
+                    data: $("#editStaffForm").serialize(),
+                    success: function (res) {
+                        if (res.success) {
+                            $("#editModal").modal("hide");
+                            location.reload();
+                        } else {
+                            alert(res.message || "Cập nhật không thành công!");
+                        }
+                    },
+                    error: function () {
+                        alert("Có lỗi xảy ra khi cập nhật!");
+                    }
+                });
+            });
+        });
+
+    });
+</script>

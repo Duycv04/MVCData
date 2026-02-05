@@ -1,0 +1,96 @@
+@model List<MVCData.Models.NhanVien>
+
+<h2 class="text-center text-danger mb-4">Quản lý nhân viên</h2>
+
+<div class="row g-2 mb-3">
+    <div class="col-md-6">
+        <input type="text" id="txtSearch" class="form-control" placeholder="Nhập ID, Họ tên hoặc Địa chỉ" />
+    </div>
+
+    <div class="col-md-2">
+        <a href="/Staff/Index" class="btn btn-secondary w-100">
+            Reset
+        </a>
+    </div>
+    <div class="col-md-2">
+        <a href="/Staff/ExportExcel" class="btn btn-success w-100">
+            Xuất Excel
+        </a>
+    </div>
+</div>
+<table class="table table-bordered table-hover text-center align-middle">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Họ tên</th>
+            <th>Ngày sinh</th>
+            <th>SĐT</th>
+            <th>Địa chỉ</th>
+            <th>Chức vụ</th>
+            <th>Số năm CT</th>
+            <th>Phòng Ban</th>
+        </tr>
+    </thead>
+    <tbody id="tableBody">
+        @foreach (var nv in Model)
+        {
+            <tr>
+                <td>@nv.ID</td>
+                <td>@nv.HoTen</td>
+                <td>@nv.NgaySinh.ToString("dd/MM/yyyy")</td>
+                <td>@nv.SoDienThoai</td>
+                <td>@nv.DiaChi</td>
+                <td>@nv.ChucVu</td>
+                <td>@nv.SoNamCongTac</td>
+                <td>@nv.TenPhongBan</td>
+            </tr>
+        }
+    </tbody>
+</table>
+<ul class="pagination justify-content-center">
+@for (int i = 1; i <= ViewBag.TotalPage; i++)
+{
+        <li class="page-item @(ViewBag.CurrentPage == i ? "active" : "")">
+            <a class="page-link" href="javascript:void(0)" onclick="loadPage(@i)">
+                @i
+            </a>
+        </li>
+}
+@section Scripts {
+        <script>
+            $(function () {
+                let timer = null;
+                $("#txtSearch").on("keyup", function () {
+                    clearTimeout(timer);
+
+                    let keyword = $(this).val();
+
+                    timer = setTimeout(function () {
+                        $.get("/Staff/Search", { keyword: keyword }, function (res) {
+                            $("#tableBody").html(res);
+                        });
+                    }, 50);
+                });
+
+            });
+            function loadPage(page) {
+                $.ajax({
+                    url: "/Staff/Report",
+                    type: "GET",
+                    data: { page: page },
+                    success: function (html) {
+
+                        var newBody = $(html).find("#tableBody").html();
+                        $("#tableBody").html(newBody);
+
+
+                        var newPaging = $(html).find(".pagination").html();
+                        $(".pagination").html(newPaging);
+                    },
+                    error: function () {
+                        alert("Không tải được dữ liệu");
+                    }
+                });
+            }
+        </script>
+}

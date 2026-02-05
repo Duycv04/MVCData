@@ -1,0 +1,16 @@
+﻿@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<nav class="d-flex justify-content-center gap-5 mb-5">
+    <a asp-controller="Staff" asp-action="Index" class="btn btn-outline-primary px-4 py-2">
+        Quản lý nhân viên
+    </a>
+
+    @* <a asp-controller="Staff" asp-action="Report" class="btn btn-outline-success px-4 py-2">
+        Danh sách nhân viên
+    </a> *@
+    <a asp-controller="SanPham" asp-action="Index" class="btn btn-outline-primary px-4 py-2">
+        Quản lý Sản Phẩm
+    </a>
+</nav>

@@ -1,0 +1,142 @@
+@model MVCData.Models.SanPham
+@{
+    Layout = null;
+}
+<form id="editProductForm" enctype="multipart/form-data">
+    <input type="hidden" name="ProductID" value="@Model.ProductID" />
+    <input type="hidden" name="ImageUrl" value="@Model.ImageUrl" />
+    <div class="mb-3">
+        <label class="form-label">Mã SP</label>
+        <input name="ProductCode" class="form-control" value="@Model.ProductCode" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Tên SP</label>
+        <input name="ProductName" class="form-control" value="@Model.ProductName" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Hãng</label>
+        <input name="Brand" class="form-control" value="@Model.Brand" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Giá</label>
+        <input name="Price" type="number" class="form-control" value="@Model.Price" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Số lượng</label>
+        <input name="Quantity" type="number" class="form-control" value="@Model.Quantity" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Mô tả</label>
+        <textarea name="Description" class="form-control">@Model.Description</textarea>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Trạng thái</label>
+        <input name="Status" class="form-control" value="@Model.Status" />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Ảnh hiện tại</label>
+        <div>
+            @if (!string.IsNullOrEmpty(Model.ImageUrl))
+            {
+                <img src="/image/@Model.ImageUrl" width="120" class="img-thumbnail" />
+            }
+            else
+            {
+                <div class="text-muted">Chưa có ảnh</div>
+            }
+        </div>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Chọn ảnh mới (nếu muốn thay)</label>
+        <input type="file" name="imageFile" class="form-control" accept="image/*" />
+    </div>
+    <div class="text-end">
+        <button type="submit" class="btn btn-primary">Lưu</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+    </div>
+</form>
+
+<script>
+$(function () {
+
+    function isEmpty(val) {
+        return !val || val.trim() === "";
+    }
+
+    function showError(id, message) {
+        $("#" + id).text(message);
+    }
+
+    function clearErrors() {
+        $("#errProductCode, #errProducName, #errDescription").text("");
+    }
+
+    function validateForm() {
+        clearErrors();
+        let valid = true;
+
+        let productCode = $("#ProductCode").val();
+        let productName = $("#ProductName").val();
+        let brand = $("#Brand").val();
+        let price = $("#Price").val();
+        let quantity = $("#Quantity").val();
+        let description = $("#Description").val();
+        let imageFile = $("input[name='imageFile']").val();
+        let productId = $("#ProductID").val();
+
+        if (isEmpty(productCode)) {
+            showError("errProductCode", "Vui lòng nhập mã sản phẩm");
+            valid = false;
+        } else if (productCode.includes(" ")) {
+            showError("errProductCode", "Mã sản phẩm không được chứa khoảng trắng");
+            valid = false;
+        }
+
+        if (isEmpty(productName)) {
+            showError("errProducName", "Vui lòng nhập tên sản phẩm");
+            valid = false;
+        }
+
+        if (isEmpty(brand)) {
+            alert("Vui lòng nhập hãng sản phẩm");
+            valid = false;
+        }
+
+        if (isEmpty(price) || Number(price) <= 0) {
+            alert("Giá sản phẩm phải lớn hơn 0");
+            valid = false;
+        }
+
+        if (isEmpty(quantity) || Number(quantity) < 0) {
+            alert("Số lượng không hợp lệ");
+            valid = false;
+        }
+
+        if (isEmpty(description)) {
+            showError("errDescription", "Vui lòng nhập mô tả sản phẩm");
+            valid = false;
+        }
+
+        if (!productId && isEmpty(imageFile)) {
+            alert("Vui lòng chọn ảnh sản phẩm");
+            valid = false;
+        }
+
+        if (!isEmpty(imageFile)) {
+            let ext = imageFile.split('.').pop().toLowerCase();
+            if (!["jpg", "jpeg", "png", "gif"].includes(ext)) {
+                alert("Ảnh phải có định dạng jpg, jpeg, png hoặc gif");
+                valid = false;
+            }
+        }
+        return valid;
+    }
+    $("#createStaffForm").on("submit", function (e) {
+        if (!validateForm()) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+});
+</script>

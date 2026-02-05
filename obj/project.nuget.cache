@@ -1,0 +1,20 @@
+{
+  "version": 2,
+  "dgSpecHash": "PQFb94ol/h4=",
+  "success": true,
+  "projectFilePath": "c:\\Users\\Duytd\\OneDrive\\Documents\\MVCData\\MVCData.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\Duytd\\.nuget\\packages\\dapper\\2.1.66\\dapper.2.1.66.nupkg.sha512",
+    "C:\\Users\\Duytd\\.nuget\\packages\\dapper.fastcrud\\3.3.2\\dapper.fastcrud.3.3.2.nupkg.sha512",
+    "C:\\Users\\Duytd\\.nuget\\packages\\epplus\\7.0.9\\epplus.7.0.9.nupkg.sha512",
+    "C:\\Users\\Duytd\\.nuget\\packages\\epplus.interfaces\\6.1.1\\epplus.interfaces.6.1.1.nupkg.sha512",
+    "C:\\Users\\Duytd\\.nuget\\packages\\epplus.system.drawing\\6.1.1\\epplus.system.drawing.6.1.1.nupkg.sha512",
+    "C:\\Users\\Duytd\\.nuget\\packages\\microsoft.io.recyclablememorystream\\3.0.0\\microsoft.io.recyclablememorystream.3.0.0.nupkg.sha512",
+    "C:\\Users\\Duytd\\.nuget\\packages\\microsoft.win32.systemevents\\7.0.0\\microsoft.win32.systemevents.7.0.0.nupkg.sha512",
+    "C:\\Users\\Duytd\\.nuget\\packages\\npgsql\\10.0.1\\npgsql.10.0.1.nupkg.sha512",
+    "C:\\Users\\Duytd\\.nuget\\packages\\system.componentmodel.annotations\\5.0.0\\system.componentmodel.annotations.5.0.0.nupkg.sha512",
+    "C:\\Users\\Duytd\\.nuget\\packages\\system.drawing.common\\7.0.0\\system.drawing.common.7.0.0.nupkg.sha512",
+    "C:\\Users\\Duytd\\.nuget\\packages\\system.security.cryptography.pkcs\\8.0.0\\system.security.cryptography.pkcs.8.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}

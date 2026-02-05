@@ -1,0 +1,152 @@
+@model MVCData.Models.SanPham
+
+@{
+    Layout = null;
+}
+<form id="createStaffForm" class="container-fluid px-2 px-md-4" enctype="multipart/form-data">
+    <div class="row g-3">
+        <input type="hidden" asp-for="ProductID" />
+        <div class="col-12 col-md-6">
+            <label class="form-label">Mã SP</label>
+            <input asp-for="ProductCode" class="form-control" />
+            <span id="errProductCode" class="text-danger small"></span>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label class="form-label">Tên SP</label>
+            <input asp-for="ProductName" class="form-control" />
+            <span id="errProducName" class="text-danger small"></span>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label class="form-label">Ảnh sản phẩm</label>
+            <input type="file" name="imageFile" class="form-control" />
+        </div>
+        <div class="col-12 col-md-6">
+            <label class="form-label">Hãng</label>
+            <input asp-for="Brand" class="form-control" list="ChucVuList" placeholder="Nhập hoặc chọn chức vụ" />
+            <datalist id="ChucVuList">
+                <option value="Apple"></option>
+                <option value="Sam Sung"></option>
+                <option value="Oppo"></option>
+                <option value="Xiaomi"></option>
+                <option value="Redmi"></option>
+                <option value="Nokia"></option>
+                <option value="Vivo"></option>
+            </datalist>
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label class="form-label">Giá</label>
+            <input asp-for="Price" type="number" min="0" class="form-control" />
+        </div>
+        <div class="col-12 col-md-6">
+            <label class="form-label">Số Lượng</label>
+            <input asp-for="Quantity" type="number" min="0" class="form-control" />
+        </div>
+
+        <div class="col-12 col-md-6">
+            <label class="form-label">Mô tả</label>
+            <input asp-for="Description" class="form-control" />
+            <span id="errDescription" class="text-danger small"></span>
+        </div>
+        <div class="col-12 col-md-6">
+            <label class="form-label">Mô tả</label>
+            <select name="Status" class="form-select">
+                <option value="Đang bán">Đang bán</option>
+                <option value="Hết Hàng">Hết Hàng</option>
+            </select>
+        </div>
+        <div class="col-12 text-end">
+            <button type="submit" id="btnSave" class="btn btn-success w-100 w-md-auto">Lưu
+            </button>
+        </div>
+    </div>
+</form>
+<script>
+$(function () {
+
+    function isEmpty(val) {
+        return !val || val.trim() === "";
+    }
+
+    function showError(id, message) {
+        $("#" + id).text(message);
+    }
+
+    function clearErrors() {
+        $("#errProductCode, #errProducName, #errDescription").text("");
+    }
+
+    function validateForm() {
+        clearErrors();
+        let valid = true;
+
+        let productCode = $("#ProductCode").val();
+        let productName = $("#ProductName").val();
+        let brand = $("#Brand").val();
+        let price = $("#Price").val();
+        let quantity = $("#Quantity").val();
+        let description = $("#Description").val();
+        let imageFile = $("input[name='imageFile']").val();
+        let productId = $("#ProductID").val();
+
+
+        if (isEmpty(productCode)) {
+            showError("errProductCode", "Vui lòng nhập mã sản phẩm");
+            valid = false;
+        } else if (productCode.includes(" ")) {
+            showError("errProductCode", "Mã sản phẩm không được chứa khoảng trắng");
+            valid = false;
+        }
+
+        if (isEmpty(productName)) {
+            showError("errProducName", "Vui lòng nhập tên sản phẩm");
+            valid = false;
+        }
+
+        if (isEmpty(brand)) {
+            alert("Vui lòng nhập hãng sản phẩm");
+            valid = false;
+        }
+
+        if (isEmpty(price) || Number(price) <= 0) {
+            alert("Giá sản phẩm phải lớn hơn 0");
+            valid = false;
+        }
+
+        if (isEmpty(quantity) || Number(quantity) < 0) {
+            alert("Số lượng không hợp lệ");
+            valid = false;
+        }
+
+        if (isEmpty(description)) {
+            showError("errDescription", "Vui lòng nhập mô tả sản phẩm");
+            valid = false;
+        }
+
+        if (!productId && isEmpty(imageFile)) {
+            alert("Vui lòng chọn ảnh sản phẩm");
+            valid = false;
+        }
+
+        if (!isEmpty(imageFile)) {
+            let ext = imageFile.split('.').pop().toLowerCase();
+            if (!["jpg", "jpeg", "png", "gif"].includes(ext)) {
+                alert("Ảnh phải có định dạng jpg, jpeg, png hoặc gif");
+                valid = false;
+            }
+        }
+
+        return valid;
+    }
+
+    $("#createStaffForm").on("submit", function (e) {
+        if (!validateForm()) {
+            e.preventDefault();
+            return false;
+        }
+    });
+
+});
+</script>
