@@ -1,43 +1,38 @@
 @model List<MVCData.Models.SanPham>
 <h4 class="text-center text-danger mb-3">Quản lý sản phẩm</h4>
 <div class="row g-2 mb-3">
-    <div class="col-md-6">
-        <input type="text" id="txtSearch" class="form-control" placeholder="Tìm kiếm theo tên hoặc mã sản phẩm..." />
-    </div>
-    <div class="col-md-2">
-        <select id="brandFilter" class="form-select">
-            <option value="">-- Tất cả hãng --</option>
-            <option value="Sam Sung">Sam Sung</option>
-            <option value="Apple">Apple</option>
-            <option value="Xiaomi">Xiaomi</option>
-            <option value="Oppo">Oppo</option>
-            <option value="Redmi">Redmi</option>
-        </select>
-    </div>
-    <form method="get" asp-action="Index" class="row g-2 mb-3">
+    <form method="get" asp-action="index" class="row g-2 mb-3">
         <div class="col-md-3">
-            <input type="number" name="minPrice" id="" class="form-control"
-            placeholder="Giá từ"
-            value="@Context.Request.Query["minPrice"]">
+            <input type="text" id="txtSearch" class="form-control"
+                   placeholder="Tìm kiếm theo tên hoặc mã sản phẩm..." />
         </div>
         <div class="col-md-3">
-            <input type="number" name="maxPrice" id="" class="form-control"
-            placeholder="Giá đến"
-            value="@Context.Request.Query["maxPrice"]">
+            <select id="brandFilter" class="form-select">
+                <option value="">Tất cả hãng</option>
+                <option value="Sam Sung">Sam Sung</option>
+                <option value="Apple">Apple</option>
+                <option value="Xiaomi">Xiaomi</option>
+                <option value="Oppo">Oppo</option>
+                <option value="Redmi">Redmi</option>
+            </select>
         </div>
-        <div class="col-md-2"> 
-            <button class="btn btn-primary w-100">
-                Lọc
-            </button>
+        <div class="col-md-2">
+            <input type="number" name="minPrice" id="" class="form-control" placeholder="Giá từ"
+                   value="@Context.Request.Query["minPrice"]">
+        </div>
+        <div class="col-md-2">
+            <input type="number" name="maxPrice" id="" class="form-control" placeholder="Giá đến"
+                   value="@Context.Request.Query["maxPrice"]">
+        </div>
+        <div class="col-md-2">
+            <button class="btn btn-primary w-100">Lọc</button>
         </div>
     </form>
     <div <div class="col-md-2">
         <button type="button" id="ThemMoi" class="btn btn-success w-100" onclick="openCreateModal()">Thêm mới</button>
     </div>
     <div class="col-md-2">
-        <a href="/SanPham/Index" class="btn btn-secondary w-100">
-            Reset
-        </a>
+        <a href="/SanPham/Index" class="btn btn-secondary w-100">Reset</a>
     </div>
 </div>
 <table class="table table-bordered table-hover text-center align-middle">
@@ -80,7 +75,6 @@
         }
     </tbody>
 </table>
-
 <div id="noProductMessage" class="text-center text-danger fw-bold mt-3" style="display:none;">
     Không tìm thấy sản phẩm
 </div>
@@ -101,156 +95,151 @@
         </div>
     </div>
 </div>
-
 @section Scripts {
     <script>
-        $(function () {
-            let timer = null;
-            $("#txtSearch").on("keyup", function () {
-                clearTimeout(timer);
-                let keyword = $(this).val();
-                timer = setTimeout(function () {
-                    $.get("/SanPham/Search", { keyword: keyword }, function (res) {
-                        $("#tableBody").html(res);
+                $(function () {
+                    let timer = null;
+                    $("#txtSearch").on("keyup", function () {
+                        clearTimeout(timer);
+                        let keyword = $(this).val();
+                        timer = setTimeout(function () {
+                            $.get("/SanPham/Search", { keyword: keyword }, function (res) {
+                                $("#tableBody").html(res);
+                            });
+                        }, 200);
                     });
-                }, 200);
-            });
-
-            window.openCreateModal = function () {
-                $("#staffModalTitle").text("Thêm Sản Phẩm");
-                $("#modalLoading").removeClass("d-none");
-                $("#modalContent").html("");
-                $("#staffModal").modal("show");
-                $("#modalContent").load("/SanPham/Create", function () {
-                    $("#modalLoading").addClass("d-none");
+                    window.openCreateModal = function () {
+                        $("#staffModalTitle").text("Thêm Sản Phẩm");
+                        $("#modalLoading").removeClass("d-none");
+                        $("#modalContent").html("");
+                        $("#staffModal").modal("show");
+                        $("#modalContent").load("/SanPham/Create", function () {
+                            $("#modalLoading").addClass("d-none");
+                        });
+                    };
+                    window.openEditModal = function (id) {
+                        $("#staffModalTitle").text("Sửa Sản Phẩm");
+                        $("#modalLoading").removeClass("d-none");
+                        $("#modalContent").html("");
+                        $("#staffModal").modal("show");
+                        $("#modalContent").load("/SanPham/Update?id=" + id, function (response, status) {
+                            $("#modalLoading").addClass("d-none");
+                            if (status !== "success") {
+                                $("#modalContent").html("<div class='text-danger'>Không tải được form sửa</div>");
+                            }
+                        });
+                    };
+                    $(document).on("submit", "#createStaffForm", function (e) {
+                        e.preventDefault();
+                        let form = this;
+                        let formData = new FormData(form);
+                        $.ajax({
+                            url: "/SanPham/Create",
+                            type: "POST",
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            success: function (res) {
+                                if (res && res.success) {
+                                    alert("Thêm sản phẩm thành công");
+                                    $("#staffModal").modal("hide");
+                                    location.reload();
+                                } else {
+                                    alert(res && res.message ? res.message : "Thêm thất bại");
+                                }
+                            },
+                            error: function () {
+                                alert("Lỗi server khi thêm sản phẩm");
+                            }
+                        });
+                    });
+                    $(document).on("submit", "#editProductForm", function (e) {
+                        e.preventDefault();
+                        let form = this;
+                        let formData = new FormData(form);
+                        $.ajax({
+                            url: "/SanPham/Update",
+                            type: "POST",
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            success: function (res) {
+                                if (res && res.success) {
+                                    alert("Cập nhật thành công");
+                                    $("#staffModal").modal("hide");
+                                    location.reload();
+                                } else {
+                                    alert(res && res.message ? res.message : "Cập nhật thất bại");
+                                }
+                            },
+                            error: function () {
+                                alert("Lỗi server khi cập nhật");
+                            }
+                        });
+                    });
                 });
-            };
-
-            window.openEditModal = function (id) {
-                $("#staffModalTitle").text("Sửa Sản Phẩm");
-                $("#modalLoading").removeClass("d-none");
-                $("#modalContent").html("");
-                $("#staffModal").modal("show");
-                $("#modalContent").load("/SanPham/Update?id=" + id, function (response, status) {
-                    $("#modalLoading").addClass("d-none");
-                    if (status !== "success") {
-                        $("#modalContent").html("<div class='text-danger'>Không tải được form sửa</div>");
-                    }
-                });
-            };
-
-            $(document).on("submit", "#createStaffForm", function (e) {
-                e.preventDefault();
-                let form = this;
-                let formData = new FormData(form);
-                $.ajax({
-                    url: "/SanPham/Create",
-                    type: "POST",
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function (res) {
-                        if (res && res.success) {
-                            alert("Thêm sản phẩm thành công");
-                            $("#staffModal").modal("hide");
-                            location.reload();
-                        } else {
-                            alert(res && res.message ? res.message : "Thêm thất bại");
+                window.confirmDelete = function (id) {
+                    if (!confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) return;
+                    var token = $('input[name="__RequestVerificationToken"]').first().val() || '';
+                    $.ajax({
+                        url: "/SanPham/Delete",
+                        type: "POST",
+                        data: { id: id },
+                        headers: { 'RequestVerificationToken': token },
+                        success: function (res) {
+                            if (res && res.success) {
+                                alert("Xóa thành công");
+                                location.reload();
+                            } else {
+                                alert((res && res.message) || "Xóa thất bại");
+                            }
+                        },
+                        error: function () {
+                            alert("Không thể xóa sản phẩm");
                         }
-                    },
-                    error: function () {
-                        alert("Lỗi server khi thêm sản phẩm");
-                    }
-                });
-            });
-
-            $(document).on("submit", "#editProductForm", function (e) {
-                e.preventDefault();
-                let form = this;
-                let formData = new FormData(form);
-                $.ajax({
-                    url: "/SanPham/Update",
-                    type: "POST",
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    success: function (res) {
-                        if (res && res.success) {
-                            alert("Cập nhật thành công");
-                            $("#staffModal").modal("hide");
-                            location.reload();
-                        } else {
-                            alert(res && res.message ? res.message : "Cập nhật thất bại");
+                    });
+                };
+                function loadPage(page) {
+                    $.ajax({
+                        url: "/SanPham/Index",
+                        type: "GET",
+                        data: { page: page },
+                        success: function (html) {
+                            var newBody = $(html).find("#tableBody").html();
+                            $("#tableBody").html(newBody);
+                            var newPaging = $(html).find(".pagination").html();
+                            $(".pagination").html(newPaging);
+                        },
+                        error: function () {
+                            alert("Không tải được dữ liệu");
                         }
-                    },
-                    error: function () {
-                        alert("Lỗi server khi cập nhật");
-                    }
-                });
-            });
-        });
-        window.confirmDelete = function (id) {
-            if (!confirm("Bạn có chắc chắn muốn xóa sản phẩm này không?")) return;
-            var token = $('input[name="__RequestVerificationToken"]').first().val() || '';
-            $.ajax({
-                url: "/SanPham/Delete",
-                type: "POST",
-                data: { id: id },
-                headers: { 'RequestVerificationToken': token },
-                success: function (res) {
-                    if (res && res.success) {
-                        alert("Xóa thành công");
-                        location.reload();
-                    } else {
-                        alert((res && res.message) || "Xóa thất bại");
-                    }
-                },
-                error: function () {
-                    alert("Không thể xóa sản phẩm");
+                    });
                 }
-            });
-        };
-        function loadPage(page) {
-            $.ajax({
-                url: "/SanPham/Index",
-                type: "GET",
-                data: { page: page },
-                success: function (html) {
-                    var newBody = $(html).find("#tableBody").html();
-                    $("#tableBody").html(newBody);
-                    var newPaging = $(html).find(".pagination").html();
-                    $(".pagination").html(newPaging);
-                },
-                error: function () {
-                    alert("Không tải được dữ liệu");
-                }
-            });
-        }
-        $(function () {
-            $("#brandFilter").on("change", function () {
-                let selectedBrand = $(this).val()
-                    .toLowerCase()
-                    .trim();
-                let found = false;
-                $("#tableBody tr").each(function () {
-                    let rowBrand = ($(this).data("brand") || "")
-                        .toString()
-                        .toLowerCase()
-                        .trim();
+                $(function () {
+                    $("#brandFilter").on("change", function () {
+                        let selectedBrand = $(this).val()
+                            .toLowerCase()
+                            .trim();
+                        let found = false;
+                        $("#tableBody tr").each(function () {
+                            let rowBrand = ($(this).data("brand") || "")
+                                .toString()
+                                .toLowerCase()
+                                .trim();
 
-                    if (!selectedBrand || rowBrand === selectedBrand) {
-                        $(this).show();
-                        found = true;
-                    } else {
-                        $(this).hide();
-                    }
+                            if (!selectedBrand || rowBrand === selectedBrand) {
+                                $(this).show();
+                                found = true;
+                            } else {
+                                $(this).hide();
+                            }
+                        });
+                        if (!found && selectedBrand !== "") {
+                            $("#noProductMessage").show();
+                        } else {
+                            $("#noProductMessage").hide();
+                        }
+                    });
                 });
-                if (!found && selectedBrand !== "") {
-                    $("#noProductMessage").show();
-                } else {
-                    $("#noProductMessage").hide();
-                }
-            });
-        });
     </script>
 }

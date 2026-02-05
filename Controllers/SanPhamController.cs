@@ -239,14 +239,14 @@ namespace MVCData.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        public IActionResult FillterPrice(decimal? minPrice, decimal? maxPrice)
+        public IActionResult FillterPrice(int? minPrice, int? maxPrice)
         {
             using var conn = _context.CreateConnection();
             string sql =@"
             SELECT *
             FROM products
-            WHERE (@Min IS NULL OR price >= @Min)
-              AND (@Max IS NULL OR price <= @Max)
+            WHERE (@Minprice IS NULL OR price >= @Minprice)
+              AND (@Maxprice IS NULL OR price <= @Maxprice)
             ORDER BY price
         ";
             var ds = conn.Query<SanPham>(sql, new
@@ -254,7 +254,7 @@ namespace MVCData.Controllers
                 MinPrice = minPrice,
                 MaxPrice = maxPrice
             }).ToList();
-            return PartialView("_Tableprice", ds);
+            return View("_Tableprice", ds);
         }
     }
 }
