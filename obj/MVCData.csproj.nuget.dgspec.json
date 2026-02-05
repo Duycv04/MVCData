@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\Duytd\\OneDrive\\Documents\\MVCData\\MVCData.csproj": {}
+    "C:\\Users\\Duytd\\OneDrive\\Documents\\MVCData\\MVCData.csproj": {}
   },
   "projects": {
-    "c:\\Users\\Duytd\\OneDrive\\Documents\\MVCData\\MVCData.csproj": {
+    "C:\\Users\\Duytd\\OneDrive\\Documents\\MVCData\\MVCData.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\Duytd\\OneDrive\\Documents\\MVCData\\MVCData.csproj",
+        "projectUniqueName": "C:\\Users\\Duytd\\OneDrive\\Documents\\MVCData\\MVCData.csproj",
         "projectName": "MVCData",
-        "projectPath": "c:\\Users\\Duytd\\OneDrive\\Documents\\MVCData\\MVCData.csproj",
+        "projectPath": "C:\\Users\\Duytd\\OneDrive\\Documents\\MVCData\\MVCData.csproj",
         "packagesPath": "C:\\Users\\Duytd\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\Duytd\\OneDrive\\Documents\\MVCData\\obj\\",
+        "outputPath": "C:\\Users\\Duytd\\OneDrive\\Documents\\MVCData\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

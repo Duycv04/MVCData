@@ -14,6 +14,23 @@
             <option value="Redmi">Redmi</option>
         </select>
     </div>
+    <form method="get" asp-action="Index" class="row g-2 mb-3">
+        <div class="col-md-3">
+            <input type="number" name="minPrice" id="" class="form-control"
+            placeholder="Giá từ"
+            value="@Context.Request.Query["minPrice"]">
+        </div>
+        <div class="col-md-3">
+            <input type="number" name="maxPrice" id="" class="form-control"
+            placeholder="Giá đến"
+            value="@Context.Request.Query["maxPrice"]">
+        </div>
+        <div class="col-md-2"> 
+            <button class="btn btn-primary w-100">
+                Lọc
+            </button>
+        </div>
+    </form>
     <div <div class="col-md-2">
         <button type="button" id="ThemMoi" class="btn btn-success w-100" onclick="openCreateModal()">Thêm mới</button>
     </div>

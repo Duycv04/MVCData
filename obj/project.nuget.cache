@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "PQFb94ol/h4=",
+  "dgSpecHash": "ne/4rsdxY/Q=",
   "success": true,
-  "projectFilePath": "c:\\Users\\Duytd\\OneDrive\\Documents\\MVCData\\MVCData.csproj",
+  "projectFilePath": "C:\\Users\\Duytd\\OneDrive\\Documents\\MVCData\\MVCData.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Duytd\\.nuget\\packages\\dapper\\2.1.66\\dapper.2.1.66.nupkg.sha512",
     "C:\\Users\\Duytd\\.nuget\\packages\\dapper.fastcrud\\3.3.2\\dapper.fastcrud.3.3.2.nupkg.sha512",

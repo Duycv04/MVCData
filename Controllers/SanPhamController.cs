@@ -61,7 +61,7 @@ namespace MVCData.Controllers
         [HttpGet]
         public IActionResult Index()
         {
-           using var conn = _context.CreateConnection();
+            using var conn = _context.CreateConnection();
             var data = conn.Find<SanPham>(stmt => stmt
             .OrderBy($"product_id ASC")).ToList();
             return View(data);
@@ -238,6 +238,23 @@ namespace MVCData.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+        public IActionResult FillterPrice(decimal? minPrice, decimal? maxPrice)
+        {
+            using var conn = _context.CreateConnection();
+            string sql =@"
+            SELECT *
+            FROM products
+            WHERE (@Min IS NULL OR price >= @Min)
+              AND (@Max IS NULL OR price <= @Max)
+            ORDER BY price
+        ";
+            var ds = conn.Query<SanPham>(sql, new
+            {
+                MinPrice = minPrice,
+                MaxPrice = maxPrice
+            }).ToList();
+            return PartialView("_Tableprice", ds);
         }
     }
 }

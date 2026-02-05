@@ -218,3 +218,4 @@ c:\Users\Duytd\OneDrive\Documents\MVCData\obj\Debug\net10.0\refint\MVCData.dll
 c:\Users\Duytd\OneDrive\Documents\MVCData\obj\Debug\net10.0\MVCData.pdb
 c:\Users\Duytd\OneDrive\Documents\MVCData\obj\Debug\net10.0\MVCData.genruntimeconfig.cache
 c:\Users\Duytd\OneDrive\Documents\MVCData\obj\Debug\net10.0\ref\MVCData.dll
+C:\Users\Duytd\OneDrive\Documents\MVCData\obj\Debug\net10.0\MVCData.sourcelink.json
