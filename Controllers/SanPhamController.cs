@@ -239,22 +239,43 @@ namespace MVCData.Controllers
                 return BadRequest(ex.Message);
             }
         }
-        public IActionResult FillterPrice(int? minPrice, int? maxPrice)
+        public IActionResult FillterPrice(decimal? minPrice, decimal? maxPrice, string? brand, string? sortPrice)
         {
-            using var conn = _context.CreateConnection();
-            string sql =@"
-            SELECT *
-            FROM products
-            WHERE (@Minprice IS NULL OR price >= @Minprice)
-              AND (@Maxprice IS NULL OR price <= @Maxprice)
-            ORDER BY price
-        ";
-            var ds = conn.Query<SanPham>(sql, new
+            try
             {
-                MinPrice = minPrice,
-                MaxPrice = maxPrice
-            }).ToList();
-            return View("_Tableprice", ds);
+                using var conn = _context.CreateConnection();
+                var orderBy = sortPrice == "desc"
+                ? "ORDER BY price DESC"
+                : "ORDER BY price ASC";
+                var sql = $@"
+                        SELECT 
+                        item.product_id As ProductID,
+                        item.product_code As ProductCode,
+                        item.product_name As ProductName,
+                        item.image_url As ImageUrl,
+                        item.brand As Brand,
+                        item.price As Price,
+                        item.quantity As Quantity,
+                        item.description As Description,
+                        item.status As status
+                        FROM products item
+                        WHERE (@Minprice IS NULL OR item.price >= @Minprice)
+                        AND (@Maxprice IS NULL OR item.price <= @Maxprice)
+                        AND (@Brand IS NULL OR item.brand = @Brand)
+                        {orderBy}
+                    ";
+                var ds = conn.Query<SanPham>(sql, new
+                {
+                    MinPrice = minPrice,
+                    MaxPrice = maxPrice,
+                    Brand = string.IsNullOrEmpty(brand) ? null : brand
+                }).ToList();
+                return View("_TableBody", ds);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

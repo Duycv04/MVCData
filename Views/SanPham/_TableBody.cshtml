@@ -1,9 +1,12 @@
 @model List<MVCData.Models.SanPham>
+     @{
+        Layout = null;
+    }
 @if (!Model.Any())
 {
     <tr>
         <td colspan="10" class="text-center text-danger">
-            Không tìm thấy dữ liệu
+            Không tìm thấy sản phẩm
         </td>
     </tr>
 }
