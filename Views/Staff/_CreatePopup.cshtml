@@ -83,8 +83,8 @@
         }
         function checkHoTen() {
             let hoTen = $("#HoTen").val().trim();
-            if (hoTen.length < 3) {
-                $("#errHoTen").text("Họ tên phải có ít nhất 3 ký tự");
+            if (hoTen.length < 2) {
+                $("#errHoTen").text("Họ tên phải có ít nhất 2 ký tự");
                 return false;
             }
             $("#errHoTen").text("");

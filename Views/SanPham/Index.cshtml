@@ -201,54 +201,53 @@
                  } else {
                   alert((res && res.message) || "Xóa thất bại");
                 }
-                            },
-                            error: function () {
-                                alert("Không thể xóa sản phẩm");
-                            }
-                        });
-                    };
-                    function loadPage(page) {
-                        $.ajax({
-                            url: "/SanPham/Index",
-                            type: "GET",
-                            data: { page: page },
-                            success: function (html) {
-                                var newBody = $(html).find("#tableBody").html();
-                                $("#tableBody").html(newBody);
-                                var newPaging = $(html).find(".pagination").html();
-                                $(".pagination").html(newPaging);
-                            },
-                            error: function () {
-                                alert("Không tải được dữ liệu");
-                            }
-                        });
-                    }
-                    $(function () {
-                        $("#brandFilter").on("change", function () {
-                            let selectedBrand = $(this).val()
-                                .toLowerCase()
-                                .trim();
-                            let found = false;
-                            $("#tableBody tr").each(function () {
-                                let rowBrand = ($(this).data("brand") || "")
-                                    .toString()
-                                    .toLowerCase()
-                                    .trim();
-
-                                if (!selectedBrand || rowBrand === selectedBrand) {
-                                    $(this).show();
-                                    found = true;
-                                } else {
-                                    $(this).hide();
-                                }
-                            });
-                            if (!found && selectedBrand !== "") {
-                                $("#noProductMessage").show();
-                            } else {
-                                $("#noProductMessage").hide();
-                            }
-                        });
+                },
+                error: function () {
+                alert("Không thể xóa sản phẩm");
+                }
+                });
+            };
+        function loadPage(page) {
+            $.ajax({
+                    url: "/SanPham/Index",
+                    type: "GET",
+                    data: { page: page },
+                    success: function (html) {
+                    var newBody = $(html).find("#tableBody").html();
+                        $("#tableBody").html(newBody);
+                    var newPaging = $(html).find(".pagination").html();
+                        $(".pagination").html(newPaging);
+                    },
+                 error: function () {
+                    alert("Không tải được dữ liệu");
+                        }
                     });
+                }
+            $(function () {
+                    $("#brandFilter").on("change", function () {
+                let selectedBrand = $(this).val()
+                    .toLowerCase()
+                    .trim();
+                let found = false;
+                    $("#tableBody tr").each(function () {
+                let rowBrand = ($(this).data("brand") || "")
+                    .toString()
+                    .toLowerCase()
+                    .trim();
+                if (!selectedBrand || rowBrand === selectedBrand) {
+                    $(this).show();
+                    found = true;
+                } else {
+                    $(this).hide();
+                }
+            });
+            if (!found && selectedBrand !== "") {
+                $("#noProductMessage").show();
+            } else {
+                $("#noProductMessage").hide();
+            }
+        });
+    });
     document.getElementById("filterForm").addEventListener("submit", function (e) {
     e.preventDefault(); 
     const params = new URLSearchParams(new FormData(this));
@@ -257,6 +256,6 @@
         .then(html => {
             document.getElementById("tableBody").innerHTML = html;
         });
-});
+    });
     </script>
 }

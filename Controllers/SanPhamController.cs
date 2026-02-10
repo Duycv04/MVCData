@@ -277,5 +277,25 @@ namespace MVCData.Controllers
                 return BadRequest(ex.Message);
             }
         }
+        public IActionResult SelectSP()
+        {
+            using var conn = _context.CreateConnection();
+
+            var sql = @"
+            SELECT 
+                item.product_id ASProductID,
+                item.product_name AS ProductName,
+                item.price AS Price,
+                item.quantity AS Quantity,
+                item.image_url AS ImageUrl
+            FROM products AS
+            WHERE Quantity >= 0
+            ORDER BY ProductID DESC
+            LIMIT 8
+        ";
+            var products = conn.Query<SanPham>(sql).ToList();
+
+            return View(products);
+        }
     }
 }

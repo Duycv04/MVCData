@@ -29,3 +29,63 @@ body {
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
 }
+/* ===== BANNER SLIDE ===== */
+.banner-slide {
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+/* Lớp tối để chữ nổi */
+.banner-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+}
+
+/* Nội dung giữa banner */
+.banner-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    max-width: 800px;
+    padding: 20px;
+}
+
+.banner-content h1 {
+    font-size: 3rem;
+}
+
+.banner-content p {
+    margin: 15px 0 25px;
+}
+
+@media (max-width: 768px) {
+    .banner-content h1 {
+        font-size: 2rem;
+    }
+}
+
+.product-detail-img {
+    max-height: 450px;
+    object-fit: contain;
+    transition: transform .3s ease;
+}
+
+.product-detail-img:hover {
+    transform: scale(1.05);
+}
+.nav-link.active {
+    font-weight: 600;
+    color: #0d6efd !important;
+}
+header {
+    transition: box-shadow .3s ease;
+}
+
+header.scrolled {
+    box-shadow: 0 6px 18px rgba(0,0,0,.12);
+}

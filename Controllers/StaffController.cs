@@ -38,7 +38,7 @@ using OfficeOpenXml.Style;
 using System.Drawing;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Dapper.FastCrud;
-
+using Npgsql;
 namespace MVCData.Controllers
 {
     public class StaffController : Controller
@@ -48,38 +48,19 @@ namespace MVCData.Controllers
         {
             _context = context;
         }
-        public IActionResult GetById(int id)
-        {
-            using var conn= _context.CreateConnection();
-            var nv = conn.Get(new NhanVien
-            {
-               ID = id
-            });
-            return Json(nv);
-        }
         public IActionResult Index(int phongBanId = 0, int page = 1)
         {
             int pageSize = 10;
             int offset = (page - 1) * pageSize;
             using var conn = _context.CreateConnection();
-            var phongBans = conn.Query(
-                "SELECT id, ten_phong_ban FROM phong_ban ORDER BY ten_phong_ban"
-            ).ToList();
-            ViewBag.PhongBanSelectList = new SelectList(
-                phongBans,
-                "id",
-                "ten_phong_ban",
-                phongBanId);
-            string countSql = @"
-        SELECT COUNT(*)
-        FROM nhan_vien
-        WHERE (@PhongBanId = 0 OR phongban_id = @PhongBanId)";
-            int totalRecord = conn.ExecuteScalar<int>(
-                countSql,
+            var phongBans = conn.Query("SELECT id, ten_phong_ban FROM phong_ban ORDER BY ten_phong_ban").ToList();
+            ViewBag.PhongBanSelectList = new SelectList(phongBans,"id","ten_phong_ban",phongBanId);
+            string countSql = @"SELECT COUNT(*) FROM nhan_vien WHERE (@PhongBanId = 0 OR phongban_id = @PhongBanId)";
+            int totalRecord = conn.ExecuteScalar<int>( countSql,
                 new { PhongBanId = phongBanId });
             int totalPage = (int)Math.Ceiling(totalRecord / (double)pageSize);
             string sql = @"
-        SELECT 
+            SELECT 
             nv.id AS Id,
             nv.ho_ten AS HoTen,
             nv.ngay_sinh::timestamp AS NgaySinh,
@@ -88,12 +69,12 @@ namespace MVCData.Controllers
             nv.chuc_vu AS ChucVu,
             nv.so_nam_cong_tac AS SoNamCongTac,
             pb.ten_phong_ban AS TenPhongBan
-        FROM nhan_vien nv
-        LEFT JOIN phong_ban pb 
+            FROM nhan_vien nv
+            LEFT JOIN phong_ban pb 
             ON nv.phongban_id = pb.id
-        WHERE (@PhongBanId = 0 OR nv.phongban_id = @PhongBanId)
-        ORDER BY nv.id
-        LIMIT @pageSize OFFSET @offset";
+            WHERE (@PhongBanId = 0 OR nv.phongban_id = @PhongBanId)
+            ORDER BY nv.id
+            LIMIT @pageSize OFFSET @offset";
 
             var data = conn.Query<NhanVien>(
                 sql,
@@ -139,7 +120,7 @@ namespace MVCData.Controllers
             ViewBag.TotalPage = (int)Math.Ceiling(totalRow / (double)pageSize);
             ViewBag.CurrentPage = page;
 
-            return PartialView("Index", list);
+            return View("Index", list);
         }
         [HttpGet]
         public IActionResult CreatePopup()
@@ -261,61 +242,61 @@ namespace MVCData.Controllers
 
             return PartialView("_NhanVienTableBody", data);
         }
-        public IActionResult ExportExcel()
-        {
-            using var conn = _context.CreateConnection();
-            ViewBag.PhongBans = conn.Query<PhongBan>(
-                    "SELECT id, ten_phong_ban AS TenPhongBan FROM phong_ban"
-                ).ToList();
-            var list = conn.Query<NhanVien>(
-            @"SELECT 
-            nv.id AS Id,
-            nv.ho_ten AS HoTen,
-            nv.ngay_sinh::timestamp AS NgaySinh,
-            nv.so_dien_thoai AS SoDienThoai,
-            nv.dia_chi AS DiaChi,
-            nv.chuc_vu AS ChucVu,
-            nv.so_nam_cong_tac AS SoNamCongTac,
-            pb.ten_phong_ban AS TenPhongBan
-        FROM nhan_vien nv
-        LEFT JOIN phong_ban pb 
-            ON nv.phongban_id = pb.id
-            ORDER BY nv.id"
-            ).ToList();
+        // public IActionResult ExportExcel()
+        // {
+        //     using var conn = _context.CreateConnection();
+        //     ViewBag.PhongBans = conn.Query<PhongBan>(
+        //             "SELECT id, ten_phong_ban AS TenPhongBan FROM phong_ban"
+        //         ).ToList();
+        //     var list = conn.Query<NhanVien>(
+        //     @"SELECT 
+        //     nv.id AS Id,
+        //     nv.ho_ten AS HoTen,
+        //     nv.ngay_sinh::timestamp AS NgaySinh,
+        //     nv.so_dien_thoai AS SoDienThoai,
+        //     nv.dia_chi AS DiaChi,
+        //     nv.chuc_vu AS ChucVu,
+        //     nv.so_nam_cong_tac AS SoNamCongTac,
+        //     pb.ten_phong_ban AS TenPhongBan
+        // FROM nhan_vien nv
+        // LEFT JOIN phong_ban pb 
+        //     ON nv.phongban_id = pb.id
+        //     ORDER BY nv.id"
+        //     ).ToList();
 
-            using var package = new ExcelPackage();
-            var ws = package.Workbook.Worksheets.Add("NhanVien");
+        //     using var package = new ExcelPackage();
+        //     var ws = package.Workbook.Worksheets.Add("NhanVien");
 
-            ws.Cells[1, 1].Value = "ID";
-            ws.Cells[1, 2].Value = "Họ tên";
-            ws.Cells[1, 3].Value = "Ngày sinh";
-            ws.Cells[1, 4].Value = "SĐT";
-            ws.Cells[1, 5].Value = "Địa chỉ";
-            ws.Cells[1, 6].Value = "Chức vụ";
-            ws.Cells[1, 7].Value = "Số năm CT";
-            ws.Cells[1, 8].Value = "Phòng Ban";
+        //     ws.Cells[1, 1].Value = "ID";
+        //     ws.Cells[1, 2].Value = "Họ tên";
+        //     ws.Cells[1, 3].Value = "Ngày sinh";
+        //     ws.Cells[1, 4].Value = "SĐT";
+        //     ws.Cells[1, 5].Value = "Địa chỉ";
+        //     ws.Cells[1, 6].Value = "Chức vụ";
+        //     ws.Cells[1, 7].Value = "Số năm CT";
+        //     ws.Cells[1, 8].Value = "Phòng Ban";
 
-            int row = 2;
-            foreach (var nv in list)
-            {
-                ws.Cells[row, 1].Value = nv.ID;
-                ws.Cells[row, 2].Value = nv.HoTen;
-                ws.Cells[row, 3].Value = nv.NgaySinh.ToString("dd/MM/yyyy");
-                ws.Cells[row, 4].Value = nv.SoDienThoai;
-                ws.Cells[row, 5].Value = nv.DiaChi;
-                ws.Cells[row, 6].Value = nv.ChucVu;
-                ws.Cells[row, 7].Value = nv.SoNamCongTac;
-                ws.Cells[row, 8].Value = nv.TenPhongBan;
-                row++;
-            }
-            ws.Cells.AutoFitColumns();
-            var stream = new MemoryStream(package.GetAsByteArray());
-            return File(
-                stream,
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                "DanhSachNhanVien.xlsx"
-            );
-        }
+        //     int row = 2;
+        //     foreach (var nv in list)
+        //     {
+        //         ws.Cells[row, 1].Value = nv.ID;
+        //         ws.Cells[row, 2].Value = nv.HoTen;
+        //         ws.Cells[row, 3].Value = nv.NgaySinh.ToString("dd/MM/yyyy");
+        //         ws.Cells[row, 4].Value = nv.SoDienThoai;
+        //         ws.Cells[row, 5].Value = nv.DiaChi;
+        //         ws.Cells[row, 6].Value = nv.ChucVu;
+        //         ws.Cells[row, 7].Value = nv.SoNamCongTac;
+        //         ws.Cells[row, 8].Value = nv.TenPhongBan;
+        //         row++;
+        //     }
+        //     ws.Cells.AutoFitColumns();
+        //     var stream = new MemoryStream(package.GetAsByteArray());
+        //     return File(
+        //         stream,
+        //         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        //         "DanhSachNhanVien.xlsx"
+        //     );
+        // }
         public IActionResult Filter(int phongBanId = 0)
         {
             using var conn = _context.CreateConnection();
